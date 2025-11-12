@@ -1,11 +1,1063 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="pt-BR">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Document</title>
+    <title>Painel B3 Pro</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, sans-serif;
+            background: #0a0e27;
+            color: #e1e8f0;
+        }
+
+        .header {
+            background: #141b2d;
+            padding: 20px 40px;
+            border-bottom: 1px solid #1e2942;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .logo {
+            display: flex;
+            align-items: center;
+            gap: 15px;
+        }
+
+        .logo-icon {
+            width: 40px;
+            height: 40px;
+            background: linear-gradient(135deg, #ff6b6b, #ee5a6f);
+            border-radius: 8px;
+        }
+
+        .logo-text h1 {
+            font-size: 24px;
+            font-weight: 600;
+        }
+
+        .status {
+            background: #1e2942;
+            padding: 4px 12px;
+            border-radius: 4px;
+            font-size: 11px;
+            text-transform: uppercase;
+        }
+
+        .status.open {
+            color: #4fc3f7;
+        }
+
+        .status.closed {
+            color: #ff6b6b;
+        }
+
+        .search-bar {
+            flex: 1;
+            max-width: 500px;
+            margin: 0 40px;
+            position: relative;
+        }
+
+        .search-bar input {
+            width: 100%;
+            padding: 12px 20px;
+            background: #1e2942;
+            border: 1px solid #2d3a52;
+            border-radius: 8px;
+            color: #e1e8f0;
+            font-size: 14px;
+        }
+
+        .search-results {
+            position: absolute;
+            top: 100%;
+            left: 0;
+            right: 0;
+            background: #1e2942;
+            border: 1px solid #2d3a52;
+            border-radius: 8px;
+            margin-top: 8px;
+            max-height: 400px;
+            overflow-y: auto;
+            z-index: 1000;
+            display: none;
+        }
+
+        .search-results.active {
+            display: block;
+        }
+
+        .search-item {
+            padding: 12px 20px;
+            cursor: pointer;
+            border-bottom: 1px solid #2d3a52;
+        }
+
+        .search-item:hover {
+            background: #2d3a52;
+        }
+
+        .search-item-symbol {
+            font-weight: 600;
+            color: #4fc3f7;
+        }
+
+        .search-item-name {
+            font-size: 12px;
+            color: #8b95a8;
+            margin-top: 4px;
+        }
+
+        .nav {
+            display: flex;
+            gap: 30px;
+            padding: 0 40px;
+            background: #141b2d;
+            border-bottom: 1px solid #1e2942;
+        }
+
+        .nav-item {
+            padding: 16px 0;
+            cursor: pointer;
+            color: #8b95a8;
+            font-size: 14px;
+            border-bottom: 2px solid transparent;
+            transition: all 0.3s;
+        }
+
+        .nav-item.active {
+            color: #4fc3f7;
+            border-bottom-color: #4fc3f7;
+        }
+
+        .container {
+            padding: 40px;
+            max-width: 1600px;
+            margin: 0 auto;
+        }
+
+        .section {
+            display: none;
+        }
+
+        .section.active {
+            display: block;
+        }
+
+        .section-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 24px;
+        }
+
+        .section-title {
+            font-size: 20px;
+            font-weight: 600;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .btn {
+            padding: 10px 20px;
+            background: #4fc3f7;
+            border: none;
+            border-radius: 6px;
+            color: #0a0e27;
+            font-weight: 600;
+            cursor: pointer;
+            font-size: 14px;
+            transition: all 0.3s;
+        }
+
+        .btn:hover {
+            background: #3da9d5;
+        }
+
+        .btn-danger {
+            background: #ff6b6b;
+            color: white;
+            padding: 8px 12px;
+            font-size: 12px;
+        }
+
+        .grid {
+            display: grid;
+            gap: 24px;
+        }
+
+        .grid-2 {
+            grid-template-columns: repeat(2, 1fr);
+        }
+
+        .grid-3 {
+            grid-template-columns: repeat(3, 1fr);
+        }
+
+        .grid-4 {
+            grid-template-columns: repeat(4, 1fr);
+        }
+
+        .card {
+            background: #141b2d;
+            border: 1px solid #1e2942;
+            border-radius: 12px;
+            padding: 24px;
+        }
+
+        .card-title {
+            font-size: 16px;
+            font-weight: 600;
+            margin-bottom: 20px;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .stock-item {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 16px;
+            background: #1e2942;
+            border-radius: 8px;
+            margin-bottom: 12px;
+        }
+
+        .stock-info h3 {
+            font-size: 16px;
+            font-weight: 600;
+            margin-bottom: 4px;
+        }
+
+        .stock-info p {
+            font-size: 12px;
+            color: #8b95a8;
+        }
+
+        .stock-price {
+            text-align: right;
+        }
+
+        .price {
+            font-size: 18px;
+            font-weight: 600;
+            margin-bottom: 4px;
+        }
+
+        .change {
+            font-size: 13px;
+            font-weight: 500;
+        }
+
+        .change.positive {
+            color: #4fc3f7;
+        }
+
+        .change.negative {
+            color: #ff6b6b;
+        }
+
+        .stats-grid {
+            display: grid;
+            grid-template-columns: repeat(4, 1fr);
+            gap: 20px;
+            margin-bottom: 30px;
+        }
+
+        .stat-card {
+            background: #141b2d;
+            border: 1px solid #1e2942;
+            border-radius: 12px;
+            padding: 20px;
+        }
+
+        .stat-label {
+            font-size: 12px;
+            color: #8b95a8;
+            text-transform: uppercase;
+            margin-bottom: 8px;
+        }
+
+        .stat-value {
+            font-size: 24px;
+            font-weight: 600;
+        }
+
+        .chart-placeholder {
+            background: #1e2942;
+            border-radius: 8px;
+            height: 300px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: #8b95a8;
+            margin-top: 20px;
+        }
+
+        .modal {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: rgba(0, 0, 0, 0.8);
+            z-index: 2000;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .modal.active {
+            display: flex;
+        }
+
+        .modal-content {
+            background: #141b2d;
+            border: 1px solid #1e2942;
+            border-radius: 12px;
+            padding: 30px;
+            max-width: 500px;
+            width: 90%;
+        }
+
+        .modal-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 24px;
+        }
+
+        .modal-header h2 {
+            font-size: 20px;
+        }
+
+        .close-btn {
+            background: none;
+            border: none;
+            color: #8b95a8;
+            cursor: pointer;
+            font-size: 24px;
+            padding: 0;
+        }
+
+        .form-group {
+            margin-bottom: 20px;
+        }
+
+        .form-group label {
+            display: block;
+            margin-bottom: 8px;
+            font-size: 14px;
+            color: #8b95a8;
+        }
+
+        .form-group input,
+        .form-group select {
+            width: 100%;
+            padding: 12px;
+            background: #1e2942;
+            border: 1px solid #2d3a52;
+            border-radius: 6px;
+            color: #e1e8f0;
+            font-size: 14px;
+        }
+
+        .stock-actions {
+            display: flex;
+            gap: 8px;
+        }
+
+        .icon-btn {
+            background: #1e2942;
+            border: 1px solid #2d3a52;
+            padding: 8px;
+            border-radius: 6px;
+            cursor: pointer;
+            color: #8b95a8;
+            transition: all 0.3s;
+        }
+
+        .icon-btn:hover {
+            background: #2d3a52;
+            color: #4fc3f7;
+        }
+
+        .alert-item {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 16px;
+            background: #1e2942;
+            border-left: 3px solid #4fc3f7;
+            border-radius: 8px;
+            margin-bottom: 12px;
+        }
+
+        .empty-state {
+            text-align: center;
+            padding: 60px 20px;
+            color: #8b95a8;
+        }
+
+        .empty-state-icon {
+            font-size: 48px;
+            margin-bottom: 16px;
+        }
+
+        .update-info {
+            text-align: center;
+            padding: 20px;
+            color: #8b95a8;
+            font-size: 13px;
+        }
+    </style>
 </head>
 <body>
-    <h1>probably</h1>
+    <div class="header">
+        <div class="logo">
+            <div class="logo-icon"></div>
+            <div class="logo-text">
+                <h1>Painel B3 Pro</h1>
+                <div class="status" id="marketStatus">Mercado Fechado</div>
+            </div>
+        </div>
+        <div class="search-bar">
+            <input type="text" id="searchInput" placeholder="Buscar ação...">
+            <div class="search-results" id="searchResults"></div>
+        </div>
+        <button class="btn" style="visibility: hidden;">🔔</button>
+    </div>
+
+    <div class="nav">
+        <div class="nav-item active" data-tab="visao-geral">📊 Visão Geral</div>
+        <div class="nav-item" data-tab="portfolio">💼 Meu Portfólio</div>
+        <div class="nav-item" data-tab="watchlist">👁️ Watchlist</div>
+        <div class="nav-item" data-tab="alertas">🔔 Alertas</div>
+        <div class="nav-item" data-tab="setores">🏢 Setores</div>
+        <div class="nav-item" data-tab="analise">📈 Análise</div>
+    </div>
+
+    <div class="container">
+        <!-- Visão Geral -->
+        <div class="section active" id="visao-geral">
+            <div class="grid grid-2" style="margin-bottom: 30px;">
+                <div class="card">
+                    <div class="card-title">🚀 Maiores Altas</div>
+                    <div id="topGainers"></div>
+                </div>
+                <div class="card">
+                    <div class="card-title">📉 Maiores Baixas</div>
+                    <div id="topLosers"></div>
+                </div>
+            </div>
+            <div class="card">
+                <div class="card-title">🔥 Maior Volume</div>
+                <div id="topVolume"></div>
+            </div>
+            
+            <div class="section-header" style="margin-top: 40px;">
+                <h2 class="section-title">💼 Minhas Ações</h2>
+                <button class="btn" onclick="openModal('portfolio')">+ Adicionar</button>
+            </div>
+            <div id="myStocksOverview"></div>
+        </div>
+
+        <!-- Meu Portfólio -->
+        <div class="section" id="portfolio">
+            <div class="section-header">
+                <h2 class="section-title">💼 Minhas Posições</h2>
+                <button class="btn" onclick="openModal('portfolio')">+ Adicionar</button>
+            </div>
+            
+            <div class="stats-grid">
+                <div class="stat-card">
+                    <div class="stat-label">Investido</div>
+                    <div class="stat-value" id="totalInvested">R$ 0,00</div>
+                </div>
+                <div class="stat-card">
+                    <div class="stat-label">Atual</div>
+                    <div class="stat-value" id="currentValue">R$ 0,00</div>
+                </div>
+                <div class="stat-card">
+                    <div class="stat-label">Lucro/Prejuízo</div>
+                    <div class="stat-value" id="profitLoss">R$ 0,00</div>
+                </div>
+                <div class="stat-card">
+                    <div class="stat-label">Retorno</div>
+                    <div class="stat-value" id="returnPercent">0,00%</div>
+                </div>
+            </div>
+
+            <div id="portfolioList"></div>
+        </div>
+
+        <!-- Watchlist -->
+        <div class="section" id="watchlist">
+            <div class="section-header">
+                <h2 class="section-title">👁️ Observação</h2>
+                <button class="btn" onclick="openModal('watchlist')">+ Adicionar</button>
+            </div>
+            <div id="watchlistList"></div>
+        </div>
+
+        <!-- Alertas -->
+        <div class="section" id="alertas">
+            <div class="section-header">
+                <h2 class="section-title">🔔 Meus Alertas</h2>
+                <button class="btn" onclick="openModal('alert')">+ Criar</button>
+            </div>
+            <div id="alertsList"></div>
+        </div>
+
+        <!-- Setores -->
+        <div class="section" id="setores">
+            <div class="section-header">
+                <h2 class="section-title">🏢 Setores</h2>
+            </div>
+            <div class="grid grid-3">
+                <div class="card">
+                    <h3>🛢️ Petróleo e Gás</h3>
+                    <div class="chart-placeholder">Setor em desenvolvimento</div>
+                </div>
+                <div class="card">
+                    <h3>🏦 Bancos</h3>
+                    <div class="chart-placeholder">Setor em desenvolvimento</div>
+                </div>
+                <div class="card">
+                    <h3>⚡ Energia</h3>
+                    <div class="chart-placeholder">Setor em desenvolvimento</div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Análise -->
+        <div class="section" id="analise">
+            <div class="section-header">
+                <h2 class="section-title">📈 Comparador</h2>
+            </div>
+            <div class="card">
+                <div class="chart-placeholder">Ferramenta de comparação em desenvolvimento</div>
+            </div>
+        </div>
+
+        <div class="update-info">
+            📊 Painel B3 Pro - Atualização a cada 20s
+        </div>
+    </div>
+
+    <!-- Modal -->
+    <div class="modal" id="modal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h2 id="modalTitle">Adicionar Ação</h2>
+                <button class="close-btn" onclick="closeModal()">×</button>
+            </div>
+            <div id="modalBody"></div>
+        </div>
+    </div>
+
+    <script>
+        // Dados
+        const stockList = [
+            { symbol: 'PETR4', name: 'Petróleo Brasileiro S.A. - Petrobras', sector: 'Petróleo e Gás' },
+            { symbol: 'VALE3', name: 'Vale S.A.', sector: 'Mineração' },
+            { symbol: 'ITUB4', name: 'Itaú Unibanco Holding S.A.', sector: 'Bancos' },
+            { symbol: 'BBDC4', name: 'Banco Bradesco S.A.', sector: 'Bancos' },
+            { symbol: 'MGLU3', name: 'Magazine Luiza S.A.', sector: 'Varejo' },
+            { symbol: 'ABEV3', name: 'Ambev S.A.', sector: 'Bebidas' },
+            { symbol: 'WEGE3', name: 'WEG S.A.', sector: 'Máquinas e Equipamentos' },
+            { symbol: 'B3SA3', name: 'B3 S.A.', sector: 'Serviços Financeiros' },
+            { symbol: 'RENT3', name: 'Localiza Rent a Car S.A.', sector: 'Aluguel de Carros' },
+            { symbol: 'RAIL3', name: 'Rumo S.A.', sector: 'Transporte' },
+            { symbol: 'SUZB3', name: 'Suzano S.A.', sector: 'Papel e Celulose' },
+            { symbol: 'JBSS3', name: 'JBS S.A.', sector: 'Alimentos' },
+            { symbol: 'VIVT3', name: 'Telefônica Brasil S.A.', sector: 'Telecomunicações' },
+            { symbol: 'ELET3', name: 'Centrais Elétricas Brasileiras S.A.', sector: 'Energia' },
+            { symbol: 'CMIG4', name: 'Companhia Energética de Minas Gerais', sector: 'Energia' }
+        ];
+
+        let stockData = {};
+        let portfolio = [];
+        let watchlist = [];
+        let alerts = [];
+        let currentModalType = '';
+        let selectedStock = null;
+
+        // Verificar status do mercado
+        function updateMarketStatus() {
+            const now = new Date();
+            const hours = now.getHours();
+            const minutes = now.getMinutes();
+            const day = now.getDay();
+            const statusElement = document.getElementById('marketStatus');
+            
+            // Mercado abre às 10h e fecha às 18h, segunda a sexta (1-5)
+            const isWeekday = day >= 1 && day <= 5;
+            const currentTime = hours * 60 + minutes;
+            const marketOpen = 10 * 60; // 10:00
+            const marketClose = 18 * 60; // 18:00
+            
+            if (isWeekday && currentTime >= marketOpen && currentTime < marketClose) {
+                statusElement.textContent = 'Mercado Aberto';
+                statusElement.className = 'status open';
+            } else {
+                statusElement.textContent = 'Mercado Fechado';
+                statusElement.className = 'status closed';
+            }
+        }
+
+        // Simular dados de ações
+        function generateStockData() {
+            stockList.forEach(stock => {
+                const basePrice = Math.random() * 100 + 10;
+                const change = (Math.random() - 0.5) * 5;
+                const changePercent = (change / basePrice) * 100;
+                stockData[stock.symbol] = {
+                    ...stock,
+                    price: basePrice.toFixed(2),
+                    change: change.toFixed(2),
+                    changePercent: changePercent.toFixed(2),
+                    volume: Math.floor(Math.random() * 50000000) + 1000000,
+                    marketCap: (basePrice * Math.random() * 1000000000).toFixed(2)
+                };
+            });
+            updateAllViews();
+        }
+
+        // Busca
+        const searchInput = document.getElementById('searchInput');
+        const searchResults = document.getElementById('searchResults');
+
+        searchInput.addEventListener('input', (e) => {
+            const term = e.target.value.toLowerCase();
+            if (term.length === 0) {
+                searchResults.classList.remove('active');
+                return;
+            }
+
+            const results = stockList.filter(stock => 
+                stock.symbol.toLowerCase().includes(term) ||
+                stock.name.toLowerCase().includes(term)
+            );
+
+            if (results.length > 0) {
+                searchResults.innerHTML = results.map(stock => `
+                    <div class="search-item" onclick="selectStock('${stock.symbol}')">
+                        <div class="search-item-symbol">${stock.symbol}</div>
+                        <div class="search-item-name">${stock.name}</div>
+                    </div>
+                `).join('');
+                searchResults.classList.add('active');
+            } else {
+                searchResults.classList.remove('active');
+            }
+        });
+
+        function selectStock(symbol) {
+            selectedStock = stockList.find(s => s.symbol === symbol);
+            searchInput.value = `${selectedStock.symbol} - ${selectedStock.name}`;
+            searchResults.classList.remove('active');
+        }
+
+        // Navegação
+        document.querySelectorAll('.nav-item').forEach(item => {
+            item.addEventListener('click', () => {
+                document.querySelectorAll('.nav-item').forEach(i => i.classList.remove('active'));
+                document.querySelectorAll('.section').forEach(s => s.classList.remove('active'));
+                item.classList.add('active');
+                document.getElementById(item.dataset.tab).classList.add('active');
+            });
+        });
+
+        // Modal
+        function openModal(type) {
+            currentModalType = type;
+            const modal = document.getElementById('modal');
+            const modalTitle = document.getElementById('modalTitle');
+            const modalBody = document.getElementById('modalBody');
+
+            if (type === 'portfolio') {
+                modalTitle.textContent = 'Adicionar ao Portfólio';
+                modalBody.innerHTML = `
+                    <div class="form-group">
+                        <label>Ação Selecionada</label>
+                        <input type="text" id="stockDisplay" value="${selectedStock ? selectedStock.symbol + ' - ' + selectedStock.name : ''}" readonly>
+                    </div>
+                    <div class="form-group">
+                        <label>Quantidade</label>
+                        <input type="number" id="quantity" placeholder="Ex: 100">
+                    </div>
+                    <div class="form-group">
+                        <label>Preço Médio (R$)</label>
+                        <input type="number" step="0.01" id="avgPrice" placeholder="Ex: 29.50">
+                    </div>
+                    <button class="btn" onclick="addToPortfolio()" style="width: 100%;">Adicionar</button>
+                `;
+            } else if (type === 'watchlist') {
+                modalTitle.textContent = 'Adicionar à Watchlist';
+                modalBody.innerHTML = `
+                    <div class="form-group">
+                        <label>Ação Selecionada</label>
+                        <input type="text" id="stockDisplay" value="${selectedStock ? selectedStock.symbol + ' - ' + selectedStock.name : ''}" readonly>
+                    </div>
+                    <button class="btn" onclick="addToWatchlist()" style="width: 100%;">Adicionar</button>
+                `;
+            } else if (type === 'alert') {
+                modalTitle.textContent = 'Criar Alerta';
+                modalBody.innerHTML = `
+                    <div class="form-group">
+                        <label>Ação Selecionada</label>
+                        <input type="text" id="stockDisplay" value="${selectedStock ? selectedStock.symbol + ' - ' + selectedStock.name : ''}" readonly>
+                    </div>
+                    <div class="form-group">
+                        <label>Tipo de Alerta</label>
+                        <select id="alertType">
+                            <option value="acima">Acima de</option>
+                            <option value="abaixo">Abaixo de</option>
+                        </select>
+                    </div>
+                    <div class="form-group">
+                        <label>Preço (R$)</label>
+                        <input type="number" step="0.01" id="alertPrice" placeholder="Ex: 50.00">
+                    </div>
+                    <button class="btn" onclick="addAlert()" style="width: 100%;">Criar Alerta</button>
+                `;
+            }
+
+            modal.classList.add('active');
+        }
+
+        function closeModal() {
+            document.getElementById('modal').classList.remove('active');
+            selectedStock = null;
+            searchInput.value = '';
+        }
+
+        // Adicionar ao portfólio
+        function addToPortfolio() {
+            const quantity = document.getElementById('quantity').value;
+            const avgPrice = document.getElementById('avgPrice').value;
+
+            if (selectedStock && quantity && avgPrice) {
+                portfolio.push({
+                    id: Date.now(),
+                    symbol: selectedStock.symbol,
+                    name: selectedStock.name,
+                    quantity: parseInt(quantity),
+                    avgPrice: parseFloat(avgPrice)
+                });
+                updateAllViews();
+                closeModal();
+            }
+        }
+
+        // Adicionar à watchlist
+        function addToWatchlist() {
+            if (selectedStock) {
+                watchlist.push({
+                    id: Date.now(),
+                    symbol: selectedStock.symbol,
+                    name: selectedStock.name
+                });
+                updateAllViews();
+                closeModal();
+            }
+        }
+
+        // Adicionar alerta
+        function addAlert() {
+            const alertType = document.getElementById('alertType').value;
+            const alertPrice = document.getElementById('alertPrice').value;
+
+            if (selectedStock && alertPrice) {
+                alerts.push({
+                    id: Date.now(),
+                    symbol: selectedStock.symbol,
+                    name: selectedStock.name,
+                    type: alertType,
+                    price: parseFloat(alertPrice)
+                });
+                updateAllViews();
+                closeModal();
+            }
+        }
+
+        // Remover itens
+        function removeFromPortfolio(id) {
+            portfolio = portfolio.filter(item => item.id !== id);
+            updateAllViews();
+        }
+
+        function removeFromWatchlist(id) {
+            watchlist = watchlist.filter(item => item.id !== id);
+            updateAllViews();
+        }
+
+        function removeAlert(id) {
+            alerts = alerts.filter(item => item.id !== id);
+            updateAllViews();
+        }
+
+        // Atualizar views
+        function updateAllViews() {
+            updateTopGainers();
+            updateTopLosers();
+            updateTopVolume();
+            updateMyStocksOverview();
+            updatePortfolio();
+            updateWatchlist();
+            updateAlerts();
+        }
+
+        function updateTopGainers() {
+            const sorted = Object.values(stockData).sort((a, b) => parseFloat(b.changePercent) - parseFloat(a.changePercent)).slice(0, 5);
+            document.getElementById('topGainers').innerHTML = sorted.map(stock => `
+                <div class="stock-item">
+                    <div class="stock-info">
+                        <h3>${stock.symbol}</h3>
+                        <p>${stock.name}</p>
+                    </div>
+                    <div class="stock-price">
+                        <div class="price">R$ ${stock.price}</div>
+                        <div class="change positive">+${stock.changePercent}%</div>
+                    </div>
+                </div>
+            `).join('');
+        }
+
+        function updateTopLosers() {
+            const sorted = Object.values(stockData).sort((a, b) => parseFloat(a.changePercent) - parseFloat(b.changePercent)).slice(0, 5);
+            document.getElementById('topLosers').innerHTML = sorted.map(stock => `
+                <div class="stock-item">
+                    <div class="stock-info">
+                        <h3>${stock.symbol}</h3>
+                        <p>${stock.name}</p>
+                    </div>
+                    <div class="stock-price">
+                        <div class="price">R$ ${stock.price}</div>
+                        <div class="change negative">${stock.changePercent}%</div>
+                    </div>
+                </div>
+            `).join('');
+        }
+
+        function updateTopVolume() {
+            const sorted = Object.values(stockData).sort((a, b) => b.volume - a.volume).slice(0, 5);
+            document.getElementById('topVolume').innerHTML = sorted.map(stock => `
+                <div class="stock-item">
+                    <div class="stock-info">
+                        <h3>${stock.symbol}</h3>
+                        <p>${stock.name} • Volume: ${stock.volume.toLocaleString('pt-BR')}</p>
+                    </div>
+                    <div class="stock-price">
+                        <div class="price">R$ ${stock.price}</div>
+                        <div class="change ${parseFloat(stock.changePercent) >= 0 ? 'positive' : 'negative'}">
+                            ${parseFloat(stock.changePercent) >= 0 ? '+' : ''}${stock.changePercent}%
+                        </div>
+                    </div>
+                </div>
+            `).join('');
+        }
+
+        function updateMyStocksOverview() {
+            if (portfolio.length === 0) {
+                document.getElementById('myStocksOverview').innerHTML = `
+                    <div class="empty-state">
+                        <div class="empty-state-icon">📊</div>
+                        <p>Nenhuma ação adicionada</p>
+                        <button class="btn" style="margin-top: 20px;" onclick="openModal('portfolio')">+ Adicionar Primeira Ação</button>
+                    </div>
+                `;
+                return;
+            }
+
+            document.getElementById('myStocksOverview').innerHTML = portfolio.map(item => {
+                const stock = stockData[item.symbol];
+                const currentValue = parseFloat(stock.price) * item.quantity;
+                const invested = item.avgPrice * item.quantity;
+                const profit = currentValue - invested;
+                const profitPercent = ((profit / invested) * 100).toFixed(2);
+                
+                return `
+                    <div class="stock-item">
+                        <div class="stock-info">
+                            <h3>${item.symbol}</h3>
+                            <p>${item.quantity} ações @ R$ ${item.avgPrice.toFixed(2)}</p>
+                        </div>
+                        <div class="stock-price">
+                            <div class="price">R$ ${currentValue.toFixed(2)}</div>
+                            <div class="change ${profit >= 0 ? 'positive' : 'negative'}">
+                                ${profit >= 0 ? '+' : ''}R$ ${profit.toFixed(2)} (${profit >= 0 ? '+' : ''}${profitPercent}%)
+                            </div>
+                        </div>
+                    </div>
+                `;
+            }).join('');
+        }
+
+        function updatePortfolio() {
+            if (portfolio.length === 0) {
+                document.getElementById('portfolioList').innerHTML = `
+                    <div class="empty-state">
+                        <div class="empty-state-icon">💼</div>
+                        <p>Seu portfólio está vazio</p>
+                        <button class="btn" style="margin-top: 20px;" onclick="openModal('portfolio')">+ Adicionar Primeira Ação</button>
+                    </div>
+                `;
+                document.getElementById('totalInvested').textContent = 'R$ 0,00';
+                document.getElementById('currentValue').textContent = 'R$ 0,00';
+                document.getElementById('profitLoss').textContent = 'R$ 0,00';
+                document.getElementById('returnPercent').textContent = '0,00%';
+                return;
+            }
+
+            let totalInvested = 0;
+            let currentValue = 0;
+
+            const portfolioHTML = portfolio.map(item => {
+                const stock = stockData[item.symbol];
+                const invested = item.avgPrice * item.quantity;
+                const current = parseFloat(stock.price) * item.quantity;
+                const profit = current - invested;
+                const profitPercent = ((profit / invested) * 100).toFixed(2);
+                
+                totalInvested += invested;
+                currentValue += current;
+
+                return `
+                    <div class="stock-item">
+                        <div class="stock-info">
+                            <h3>${item.symbol}</h3>
+                            <p>${stock.name}</p>
+                            <p style="margin-top: 8px; font-size: 13px;">
+                                ${item.quantity} ações @ R$ ${item.avgPrice.toFixed(2)} = R$ ${invested.toFixed(2)}
+                            </p>
+                        </div>
+                        <div style="display: flex; align-items: center; gap: 20px;">
+                            <div class="stock-price">
+                                <div class="price">R$ ${current.toFixed(2)}</div>
+                                <div class="change ${profit >= 0 ? 'positive' : 'negative'}">
+                                    ${profit >= 0 ? '+' : ''}R$ ${profit.toFixed(2)} (${profit >= 0 ? '+' : ''}${profitPercent}%)
+                                </div>
+                            </div>
+                            <div class="stock-actions">
+                                <button class="btn-danger" onclick="removeFromPortfolio(${item.id})">🗑️</button>
+                            </div>
+                        </div>
+                    </div>
+                `;
+            }).join('');
+
+            document.getElementById('portfolioList').innerHTML = portfolioHTML;
+
+            const totalProfit = currentValue - totalInvested;
+            const totalReturn = ((totalProfit / totalInvested) * 100).toFixed(2);
+
+            document.getElementById('totalInvested').textContent = `R$ ${totalInvested.toFixed(2)}`;
+            document.getElementById('currentValue').textContent = `R$ ${currentValue.toFixed(2)}`;
+            document.getElementById('profitLoss').textContent = `R$ ${totalProfit.toFixed(2)}`;
+            document.getElementById('profitLoss').className = `stat-value ${totalProfit >= 0 ? 'positive' : 'negative'}`;
+            document.getElementById('returnPercent').textContent = `${totalReturn}%`;
+            document.getElementById('returnPercent').className = `stat-value ${totalProfit >= 0 ? 'positive' : 'negative'}`;
+        }
+
+        function updateWatchlist() {
+            if (watchlist.length === 0) {
+                document.getElementById('watchlistList').innerHTML = `
+                    <div class="empty-state">
+                        <div class="empty-state-icon">👁️</div>
+                        <p>Nenhuma ação na watchlist</p>
+                        <button class="btn" style="margin-top: 20px;" onclick="openModal('watchlist')">+ Adicionar Primeira Ação</button>
+                    </div>
+                `;
+                return;
+            }
+
+            document.getElementById('watchlistList').innerHTML = watchlist.map(item => {
+                const stock = stockData[item.symbol];
+                return `
+                    <div class="stock-item">
+                        <div class="stock-info">
+                            <h3>${item.symbol}</h3>
+                            <p>${stock.name}</p>
+                        </div>
+                        <div style="display: flex; align-items: center; gap: 20px;">
+                            <div class="stock-price">
+                                <div class="price">R$ ${stock.price}</div>
+                                <div class="change ${parseFloat(stock.changePercent) >= 0 ? 'positive' : 'negative'}">
+                                    ${parseFloat(stock.changePercent) >= 0 ? '+' : ''}${stock.changePercent}%
+                                </div>
+                            </div>
+                            <div class="stock-actions">
+                                <button class="btn-danger" onclick="removeFromWatchlist(${item.id})">🗑️</button>
+                            </div>
+                        </div>
+                    </div>
+                `;
+            }).join('');
+        }
+
+        function updateAlerts() {
+            if (alerts.length === 0) {
+                document.getElementById('alertsList').innerHTML = `
+                    <div class="empty-state">
+                        <div class="empty-state-icon">🔔</div>
+                        <p>Nenhum alerta configurado</p>
+                        <button class="btn" style="margin-top: 20px;" onclick="openModal('alert')">+ Criar Primeiro Alerta</button>
+                    </div>
+                `;
+                return;
+            }
+
+            document.getElementById('alertsList').innerHTML = alerts.map(item => {
+                const stock = stockData[item.symbol];
+                return `
+                    <div class="alert-item">
+                        <div class="stock-info">
+                            <h3>${item.symbol} - ${item.type === 'acima' ? 'Acima' : 'Abaixo'} de R$ ${item.price.toFixed(2)}</h3>
+                            <p>${stock.name}</p>
+                            <p style="margin-top: 8px; font-size: 13px;">
+                                Preço atual: R$ ${stock.price}
+                            </p>
+                        </div>
+                        <div class="stock-actions">
+                            <button class="btn-danger" onclick="removeAlert(${item.id})">🗑️</button>
+                        </div>
+                    </div>
+                `;
+            }).join('');
+        }
+
+        // Inicializar
+        updateMarketStatus();
+        generateStockData();
+        setInterval(generateStockData, 20000);
+        setInterval(updateMarketStatus, 60000); // Atualiza status a cada minuto
+
+        // Fechar modal ao clicar fora
+        document.getElementById('modal').addEventListener('click', (e) => {
+            if (e.target.id === 'modal') {
+                closeModal();
+            }
+        });
+
+        // Fechar busca ao clicar fora
+        document.addEventListener('click', (e) => {
+            if (!e.target.closest('.search-bar')) {
+                searchResults.classList.remove('active');
+            }
+        });
+    </script>
 </body>
 </html>
